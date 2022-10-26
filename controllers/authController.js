@@ -1,35 +1,22 @@
 const User = require('../models/User')
 const { StatusCodes } = require('http-status-codes')
 const CustomError = require('../errors')
-const { createTokenUser, createJWT, generateQR } = require('../utils')
+const { createTokenUser, createJWT } = require('../utils')
 
 //! REGISTER CONTROLLER
 const register = async (req, res) => {
-  const { name, nationalID, passportNumber, password, role } = req.body
+  const { name, idNumber, password, role } = req.body
 
-  if (!name || !(nationalID || passportNumber) || !password || !role) {
+  if (!name || !idNumber || !password || !role) {
     throw new CustomError.BadRequestError('Please provide all values')
   }
 
-  let userAlreadyExists = false
-  if (nationalID) {
-    userAlreadyExists = await User.findOne({ nationalID })
-  } else {
-    userAlreadyExists = await User.findOne({ passportNumber })
-  }
-
+  const userAlreadyExists = await User.findOne({ idNumber })
   if (userAlreadyExists) {
     throw new CustomError.BadRequestError('User already exists')
   }
 
-  const qrCode = await generateQR(name, nationalID, passportNumber, role)
-  const user = await User.create(
-    Object.assign(
-      { name, password, role, qrCode },
-      nationalID && { nationalID },
-      passportNumber && { passportNumber }
-    )
-  )
+  const user = await User.create({ name, idNumber, password, role })
 
   const tokenUser = createTokenUser(user)
   const token = createJWT({ payload: tokenUser })
@@ -38,18 +25,12 @@ const register = async (req, res) => {
 
 //! LOGIN CONTROLLER
 const login = async (req, res) => {
-  const { nationalID, passportNumber, password } = req.body
-  if (!(nationalID || passportNumber) || !password) {
+  const { idNumber, password } = req.body
+  if (!idNumber || !password) {
     throw new CustomError.BadRequestError('Please provide all values')
   }
 
-  let user = null
-  if (nationalID) {
-    user = await User.findOne({ nationalID })
-  } else {
-    user = await User.findOne({ passportNumber })
-  }
-
+  const user = await User.findOne({ idNumber })
   if (!user) {
     throw new CustomError.UnauthenticatedError('Invalid Credentials')
   }

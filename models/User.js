@@ -10,19 +10,10 @@ const userSchema = new mongoose.Schema(
       minlength: [3, 'mininmum lenght is 3'],
       maxlength: [30, 'maximum length is 30'],
     },
-    nationalID: {
+    idNumber: {
       type: String,
       trim: true,
-      required: function () {
-        return !this.passportNumber
-      },
-    },
-    passportNumber: {
-      type: String,
-      trim: true,
-      required: function () {
-        return !this.nationalID
-      },
+      required: [true, 'Please provide id number'],
     },
     password: {
       type: String,
@@ -32,10 +23,6 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ['local', 'foreign'],
-    },
-    qrCode: {
-      type: String,
-      required: [true, 'QR code is required'],
     },
   },
   { timestamps: true }
