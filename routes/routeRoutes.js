@@ -1,13 +1,13 @@
 const express = require('express')
 const router = express.Router()
 
-const { addroute,getroutes,removeroute,getoneroute } = require('../controllers/routesmanageController')
+const { publisherSubscriber } = require('../controllers/routesmanageController')
 
 //routes
-router.route('/addroute').post(addroute)
-router.route('/getroutes').get(getroutes) 
-router.route('/getoneroute').get(getoneroute) 
-router.route('/delroute').post(removeroute)
+router.route('/addroute').post(publisherSubscriber.addroute)
+router.route('/getroutes').get(publisherSubscriber.getroutes) 
+router.route('/getoneroute').get(publisherSubscriber.getoneroute) 
+router.route('/delroute').post(publisherSubscriber.removeroute)
 
 
 module.exports = router
