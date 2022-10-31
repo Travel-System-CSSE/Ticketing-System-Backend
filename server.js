@@ -1,6 +1,7 @@
 require('dotenv').config()
 require('express-async-errors')
 
+const CommonConstants=require('./CommonConstants')
 const express = require('express')
 const app = express()
 
@@ -33,8 +34,8 @@ app.get('/', (req, res) => {
 
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/user', userRouter)
-app.use('/api/v1/manager', managerRouter)
-app.use('/api/v1/route', routeRouter)
+app.use(CommonConstants.MANAGER_PATH, managerRouter)
+app.use(CommonConstants.ROUTE_PATH, routeRouter)
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)

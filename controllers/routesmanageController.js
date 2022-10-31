@@ -1,6 +1,7 @@
 const Route = require("../models/Route");
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors");
+const CommonConstants = require('../CommonConstants')
 
 var publisherSubscriber = {};
 /**
@@ -30,12 +31,12 @@ var publisherSubscriber = {};
       !totdistance ||
       !addedby
     ) {
-      throw new CustomError.BadRequestError("Please provide all values");
+      throw new CustomError.BadRequestError(CommonConstants.EMPTY_FIELDS);
     }
 
     const CHECKEXIST = await Route.findOne({ Routename });
     if (CHECKEXIST) {
-      throw new CustomError.BadRequestError("Route already exists");
+      throw new CustomError.BadRequestError(CommonConstants.ROUTE_ALREADY_EXISTS);
     }
 
     const ROUTE = await Route.create({
