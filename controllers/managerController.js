@@ -2,6 +2,8 @@ const Manager = require('../models/Manager')
 const { StatusCodes } = require('http-status-codes')
 const CustomError = require('../errors')
 const { createJWT } = require('../utils')
+var commonConstants=require('../CommonConstants')
+const CommonConstants = require('../CommonConstants')
 
 var ManagerObs = {};
 /**
@@ -13,12 +15,12 @@ var ManagerObs = {};
     const { name, email, password } = req.body
   
     if (!name || !email || !password) {
-      throw new CustomError.BadRequestError('Please provide all values')
+      throw new CustomError.BadRequestError(commonConstants.EMPTY_FIELDS)
     }
   
     const isManagerExists = await Manager.findOne({ email })
     if (isManagerExists) {
-      throw new CustomError.BadRequestError('User already exists')
+      throw new CustomError.BadRequestError(CommonConstants.USER_ALREADY_EXISTS)
     }
   
     const manager = await Manager.create({ name, email, password })
@@ -36,17 +38,17 @@ var ManagerObs = {};
   container.managerLogin = async (req, res) => {
     const { email, password } = req.body
     if (!email || !password) {
-      throw new CustomError.BadRequestError('Please provide all values')
+      throw new CustomError.BadRequestError(commonConstants.EMPTY_FIELDS)
     }
   
     const manager = await Manager.findOne({ email })
     if (!manager) {
-      throw new CustomError.UnauthenticatedError('Invalid Credentials')
+      throw new CustomError.UnauthenticatedError(CommonConstants.INVALID_CREDENTIALS)
     }
   
     const isPasswordCorrect = await manager.comparePassword(password)
     if (!isPasswordCorrect) {
-      throw new CustomError.UnauthenticatedError('Invalid Credentials')
+      throw new CustomError.UnauthenticatedError(CommonConstants.INVALID_CREDENTIALS)
     }
   
     const tokenUser = {
@@ -60,10 +62,10 @@ var ManagerObs = {};
   container.deleteManager = async (req, res) => {
     const user = await Manager.findOne({ _id: req.params.id }).select('-password')
     if (!user) {
-      throw new CustomError.NotFoundError(`No user with id : ${req.params.id}`)
+      throw new CustomError.NotFoundError(CommonConstants.USER_NOT_FOUND+req.params.id)
     }
     await user.remove()
-    res.status(StatusCodes.OK).json({ msg: 'Success! User Deleted.' })
+    res.status(StatusCodes.OK).json({ msg: CommonConstants.SUCCESSFULL_USER_DELETE })
   }
 })(ManagerObs)
   //! MANAGER REGISTER CONTROLLER

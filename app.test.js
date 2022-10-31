@@ -1,5 +1,7 @@
 const request = require("supertest");
 const app = require("./server");
+const CommonConstants = require('./CommonConstants');
+const { INVALID_CREDENTIALS } = require("./CommonConstants");
 
 describe("Test Ticketing System API", function () {
   let userID;
@@ -163,7 +165,7 @@ describe("Test Ticketing System API", function () {
   //manager register testing POSITIVE
   it("POST manager/register", async function () {
     const response = await request(app)
-      .post("/api/v1/manager/register")
+      .post(CommonConstants.MANAGER_PATH+"/register")
       .send({
         name: "Test Manager",
         email: "test@gmail.com",
@@ -181,7 +183,7 @@ describe("Test Ticketing System API", function () {
   //manager login testing POSITIVE
   it("POST manager/login", async function () {
     const response = await request(app)
-      .post("/api/v1/manager/login")
+      .post(CommonConstants.MANAGER_PATH+"/login")
       .send({ email: "test@gmail.com", password: "password" })
       .set("Accept", "application/json");
 
@@ -199,7 +201,7 @@ describe("Test Ticketing System API", function () {
   //manager register testing NEGATIVE
   it("POST /register manager again with same credentials", async function () {
     const response = await request(app)
-      .post("/api/v1/manager/register")
+      .post(CommonConstants.MANAGER_PATH+"/register")
       .send({
         name: "Test Manager",
         email: "test@gmail.com",
@@ -208,34 +210,34 @@ describe("Test Ticketing System API", function () {
       .set("Accept", "application/json");
 
     expect(response.status).toEqual(400);
-    expect(response.body.msg).toEqual("User already exists");
+    expect(response.body.msg).toEqual(CommonConstants.USER_ALREADY_EXISTS);
   });
   //manager login testing NEGATIVE manager login with invalid credentials
   it("POST manager/login manager login with invalid credentials", async function () {
     const response = await request(app)
-      .post("/api/v1/manager/login")
+      .post(CommonConstants.MANAGER_PATH+"/login")
       .send({ email: "test@.com", password: "password" })
       .set("Accept", "application/json");
 
     expect(response.status).toEqual(401);
-    expect(response.body.msg).toEqual("Invalid Credentials");
+    expect(response.body.msg).toEqual(INVALID_CREDENTIALS);
   });
 
   //delete created test data
   it("DELETE /:id", async function () {
     const response = await request(app)
-      .delete(`/api/v1/manager/${userID}`)
+      .delete(CommonConstants.MANAGER_PATH+`/${userID}`)
       .set("Accept", "application/json");
 
     expect(response.status).toEqual(200);
     expect(response.body).toEqual({
-      msg: "Success! User Deleted.",
+      msg: CommonConstants.SUCCESSFULL_USER_DELETE,
     });
   });
   //manager add route testing POSITIVE
   it("POST manager/route", async function () {
     const response = await request(app)
-      .post("/api/v1/route/addroute")
+      .post(CommonConstants.ROUTE_PATH+"/addroute")
       .send({
         Routename: "Routename",
         bus: "bus",
@@ -267,7 +269,7 @@ describe("Test Ticketing System API", function () {
   //manager add same route route testing NEGATIVE
   it("POST manager/add route", async function () {
     const response = await request(app)
-      .post("/api/v1/route/addroute")
+      .post(CommonConstants.ROUTE_PATH+"/addroute")
       .send({
         Routename: "Routename",
         bus: "bus",
@@ -281,13 +283,13 @@ describe("Test Ticketing System API", function () {
       .set("Accept", "application/json");
     expect(response.status).toEqual(400);
     expect(response.body).toEqual({
-      msg: "Route already exists",
+      msg: CommonConstants.ROUTE_ALREADY_EXISTS,
     });
   });
   //Delete route created
   it("DELETE /route", async function () {
     const response = await request(app)
-      .post(`/api/v1/route/delroute`)
+      .post(CommonConstants.ROUTE_PATH+'/delroute')
       .send({
         id: id,
       })
@@ -298,7 +300,7 @@ describe("Test Ticketing System API", function () {
   // invalid id for delete testing NEGATIVE
   it("DELETE /route", async function () {
     const response = await request(app)
-      .post(`/api/v1/route/delroute`)
+      .post(CommonConstants.ROUTE_PATH+'/delroute')
       .send({
         id: 123,
       })
@@ -306,7 +308,7 @@ describe("Test Ticketing System API", function () {
 
     expect(response.status).toEqual(400);
     expect(response.body).toEqual({
-      msg: "error",
+      msg: CommonConstants.ERROR,
     });
   });
   ///
