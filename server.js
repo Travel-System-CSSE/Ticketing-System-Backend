@@ -14,6 +14,7 @@ const connectDB = require('./db/connect')
 
 // routers
 const authRouter = require('./routes/authRoutes')
+const userRouter = require('./routes/userRoutes')
 const managerRouter = require('./routes/managerRoutes')
 
 // middleware
@@ -30,6 +31,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/user', userRouter)
 app.use('/api/v1/manager', managerRouter)
 
 app.use(notFoundMiddleware)
@@ -40,12 +42,16 @@ const port = process.env.PORT || 5000
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URL)
-    app.listen(port, () =>
-      console.log(`Server is listening on port ${port}...`)
-    )
+    if (process.env.NODE_ENV !== 'test') {
+      app.listen(port, () =>
+        console.log(`Server is listening on port ${port}...`)
+      )
+    }
   } catch (error) {
     console.log(error)
   }
 }
 
 start()
+
+module.exports = app
