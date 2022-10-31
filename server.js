@@ -1,7 +1,7 @@
 require('dotenv').config()
 require('express-async-errors')
 
-const CommonConstants=require('./CommonConstants')
+const CommonConstants = require('./CommonConstants')
 const express = require('express')
 const app = express()
 
