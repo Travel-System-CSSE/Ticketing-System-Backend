@@ -2,13 +2,11 @@ const express = require('express')
 const router = express.Router()
 
 const {
-  managerLogin,
-  managerRegister,
-  deleteManager
+  ManagerObs
 } = require('../controllers/managerController')
 
-router.route('/register').post(managerRegister)
-router.route('/login').post(managerLogin)
-router.route('/:id').delete(deleteManager)
+router.route('/register').post(ManagerObs.managerRegister)
+router.route('/login').post(ManagerObs.managerLogin)
+router.route('/:id').delete(ManagerObs.deleteManager)
 
 module.exports = router
