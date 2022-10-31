@@ -52,5 +52,12 @@ const managerLogin = async (req, res) => {
   const token = createJWT({ payload: tokenUser })
   res.status(StatusCodes.OK).json({ user: tokenUser, token })
 }
-
-module.exports = { managerRegister, managerLogin }
+const deleteManager = async (req, res) => {
+  const user = await Manager.findOne({ _id: req.params.id }).select('-password')
+  if (!user) {
+    throw new CustomError.NotFoundError(`No user with id : ${req.params.id}`)
+  }
+  await user.remove()
+  res.status(StatusCodes.OK).json({ msg: 'Success! User Deleted.' })
+}
+module.exports = { managerRegister, managerLogin,deleteManager }
