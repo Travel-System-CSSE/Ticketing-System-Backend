@@ -7,10 +7,11 @@ const CommonConstants = require('../CommonConstants')
 
 var ManagerObs = {};
 /**
- * Controller for the user type manager managment
+ * Controller for managing user of type manager
  * observer pattern
  */ 
 (function (container){
+  //! MANAGER REGISTER FUNCTION
   container.managerRegister = async (req, res) => {
     const { name, email, password } = req.body
   
@@ -34,7 +35,7 @@ var ManagerObs = {};
     res.status(StatusCodes.CREATED).json({ user: tokenUser, token })
   }
   
-  //! MANAGER LOGIN CONTROLLER
+  //! MANAGER LOGIN FUNCTION
   container.managerLogin = async (req, res) => {
     const { email, password } = req.body
     if (!email || !password) {
@@ -59,6 +60,7 @@ var ManagerObs = {};
     const token = createJWT({ payload: tokenUser })
     res.status(StatusCodes.OK).json({ user: tokenUser, token })
   }
+  //MANAGER DELETE FUNCTION
   container.deleteManager = async (req, res) => {
     const user = await Manager.findOne({ _id: req.params.id }).select('-password')
     if (!user) {
@@ -68,7 +70,6 @@ var ManagerObs = {};
     res.status(StatusCodes.OK).json({ msg: CommonConstants.SUCCESSFULL_USER_DELETE })
   }
 })(ManagerObs)
-  //! MANAGER REGISTER CONTROLLER
  
 
 module.exports = { ManagerObs }
