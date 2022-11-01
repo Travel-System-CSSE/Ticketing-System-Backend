@@ -73,3 +73,4 @@ var ManagerObs = {};
  
 
 module.exports = { ManagerObs }
+
