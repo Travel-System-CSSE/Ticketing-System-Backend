@@ -3,39 +3,6 @@ const CustomError = require('../errors')
 const User = require('../models/User')
 const Credit = require('../models/Credit')
 
-exports.createCredit = async (req, res, next) => {
-  try {
-    const credit = await Credit.create(req.body)
-    res.status(201).json({
-      status: 'success',
-      data: {
-        credit,
-      },
-    })
-  } catch (error) {
-    res.json({
-      status: 'fail',
-      result: error,
-    })
-  }
-}
-
-exports.getCredit = async (req, res) => {
-  try {
-    const { id } = req.params
-    const documents = await Credit.find({ userId: id })
-    res.status(200).json({
-      status: 'success',
-      documents,
-    })
-  } catch (error) {
-    res.json({
-      status: 'fail',
-      result: error,
-    })
-  }
-}
-
 exports.addCredit = async (req, res) => {
   const { idNumber, amount } = req.body
 
@@ -44,8 +11,7 @@ exports.addCredit = async (req, res) => {
   }
 
   const user = await User.findOne({ idNumber })
-
-  var credit = await Credit.findOne({ userId: user._id })
+  let credit = await Credit.findOne({ userId: user._id })
 
   if (credit) {
     credit.amount = credit.amount + amount
@@ -54,22 +20,22 @@ exports.addCredit = async (req, res) => {
     credit = await Credit.create({ userId: user._id, amount })
   }
 
-  res.status(StatusCodes.OK).json({ credit })
+  res.status(StatusCodes.OK).json(credit)
 }
 
-exports.getUser = async (req, res) => {
-  const { idNumber } = req.body
-
-  if (!idNumber) {
-    throw new CustomError.BadRequestError('Please provide ID Number')
+exports.getCreditBalance = async (req, res) => {
+  const { userId } = req.params
+  if (!userId) {
+    throw new CustomError.BadRequestError('Please provide user id')
   }
 
-  const user = await User.findOne({ idNumber })
+  const credit = await Credit.findOne({ userId })
 
-  if (!user) {
-    throw new CustomError.UnauthenticatedError(
-      'No user found for this ID Number'
-    )
+  if (!credit) {
+    res.status(StatusCodes.OK).json({ userId: userId, balance: 0 })
+  } else {
+    res
+      .status(StatusCodes.OK)
+      .json({ userId: credit.userId, balance: credit.amount })
   }
-  res.status(StatusCodes.OK).json({ user })
 }

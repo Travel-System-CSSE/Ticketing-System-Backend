@@ -1,15 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const {
-  createCredit,
-  getCredit,
   addCredit,
-  getUser,
+  getCreditBalance,
 } = require('../controllers/creditController')
 
-router.route('/:id').get(getCredit)
-router.route('/').post(createCredit)
-router.route('/addCredit').post(addCredit)
-router.route('/getUser').get(getUser)
+router.route('/').post(addCredit)
+router.route('/:userId').get(getCreditBalance)
 
 module.exports = router
