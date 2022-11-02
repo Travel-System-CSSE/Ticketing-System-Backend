@@ -408,3 +408,54 @@ describe('Test Ticketing System API', function () {
     })
   })
 })
+
+//Test cases for paystation credit top up
+
+describe('Credit API', function () {
+  //! Add credit  POSITIVE
+  it('POST /credit', async function () {
+    const response = await request(app)
+      .post(CommonConstants.CREDIT_PATH)
+      .send({ amount: 1000, idNumber: '9997776661V' })
+      .set('Accept', 'application/json')
+    creditUserId = response.body.userId
+    creditId = response.body._id
+    expect(response.status).toEqual(200)
+    expect(response.body).toEqual({
+      amount: expect.any(Number),
+      userId: expect.any(String),
+      _id: expect.any(String),
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String),
+      __v: expect.any(Number),
+    })
+  })
+
+  //! Add credit  NEGATIVE
+  it('POST /credit', async function () {
+    const response = await request(app)
+      .post(CommonConstants.CREDIT_PATH)
+      .send({ idNumber: '9997776661V' })
+      .set('Accept', 'application/json')
+    expect(response.status).toEqual(400)
+    expect(response.body.msg).toEqual(CommonConstants.INVALID_CREDIT_ADD)
+  })
+
+  //! Login Paystayion User
+  it('POST /login', async function () {
+    const response = await request(app)
+      .post(`${CommonConstants.PAYSTATION_PATH}/login`)
+      .send({ employeeID: 'E1002', password: 'secret' })
+      .set('Accept', 'application/json')
+
+    userID = response.body.user.userId
+    userToken = `Bearer ${response.body.token}`
+
+    expect(response.status).toEqual(200)
+    expect(response.body.user).toEqual({
+      userId: expect.any(String),
+      name: 'Timal Silva',
+    })
+    expect(response.body.token).toEqual(expect.any(String))
+  })
+})
