@@ -17,7 +17,10 @@ const connectDB = require('./db/connect')
 const authRouter = require('./routes/authRoutes')
 const userRouter = require('./routes/userRoutes')
 const managerRouter = require('./routes/managerRoutes')
+const creditRouter = require('./routes/creditRoutes')
+const paystationAuthRouter = require('./routes/paystationAuthRoutes')
 const routeRouter = require('./routes/routeRoutes')
+
 
 // middleware
 const notFoundMiddleware = require('./middleware/not-found')
@@ -36,6 +39,8 @@ app.use(CommonConstants.AUTH_PATH, authRouter)
 app.use(CommonConstants.USER_PATH, userRouter)
 app.use(CommonConstants.MANAGER_PATH, managerRouter)
 app.use(CommonConstants.ROUTE_PATH, routeRouter)
+app.use('/api/v1/credit', creditRouter)
+app.use('/api/v1/paystation/auth', paystationAuthRouter)
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
