@@ -2,6 +2,7 @@ const User = require('../models/User')
 const { StatusCodes } = require('http-status-codes')
 const CustomError = require('../errors')
 const { checkPermissions } = require('../utils')
+const CommonConstants = require('../CommonConstants')
 
 const getUser = async (req, res) => {
   const user = await User.findOne({ _id: req.params.id }).select('-password')
@@ -22,7 +23,9 @@ const updateUserPassword = async (req, res) => {
 
   const isPasswordCorrect = await user.comparePassword(oldPassword)
   if (!isPasswordCorrect) {
-    throw new CustomError.UnauthenticatedError('Invalid Credentials')
+    throw new CustomError.UnauthenticatedError(
+      CommonConstants.INVALID_CREDENTIALS
+    )
   }
   user.password = newPassword
 

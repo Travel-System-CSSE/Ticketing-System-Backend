@@ -11,7 +11,7 @@ describe('Test Ticketing System API', function () {
     //! Register User
     it('POST /register', async function () {
       const response = await request(app)
-        .post('/api/v1/auth/register')
+        .post(`${CommonConstants.AUTH_PATH}/register`)
         .send({
           name: 'Test User',
           idNumber: 'testId123',
@@ -33,7 +33,7 @@ describe('Test Ticketing System API', function () {
     //! Login User
     it('POST /login', async function () {
       const response = await request(app)
-        .post('/api/v1/auth/login')
+        .post(`${CommonConstants.AUTH_PATH}/login`)
         .send({ idNumber: 'testId123', password: 'password' })
         .set('Accept', 'application/json')
 
@@ -53,7 +53,7 @@ describe('Test Ticketing System API', function () {
     //! Register with Same Credentials
     it('POST /register again with same credentials', async function () {
       const response = await request(app)
-        .post('/api/v1/auth/register')
+        .post(`${CommonConstants.AUTH_PATH}/register`)
         .send({
           name: 'Test User',
           idNumber: 'testId123',
@@ -63,18 +63,18 @@ describe('Test Ticketing System API', function () {
         .set('Accept', 'application/json')
 
       expect(response.status).toEqual(400)
-      expect(response.body.msg).toEqual('User already exists')
+      expect(response.body.msg).toEqual(CommonConstants.USER_ALREADY_EXISTS)
     })
 
     //! Login With Invalid Credentials
     it('POST /login with invalid credentials', async function () {
       const response = await request(app)
-        .post('/api/v1/auth/login')
+        .post(`${CommonConstants.AUTH_PATH}/login`)
         .send({ idNumber: 'testId', password: 'wrong' })
         .set('Accept', 'application/json')
 
       expect(response.status).toEqual(401)
-      expect(response.body.msg).toEqual('Invalid Credentials')
+      expect(response.body.msg).toEqual(CommonConstants.INVALID_CREDENTIALS)
     })
   })
 
@@ -82,7 +82,7 @@ describe('Test Ticketing System API', function () {
     //! Get User By Id
     it('GET /:id', async function () {
       const response = await request(app)
-        .get(`/api/v1/user/${userID}`)
+        .get(`${CommonConstants.USER_PATH}/${userID}`)
         .set('Accept', 'application/json')
         .set('authorization', userToken)
 
@@ -102,7 +102,7 @@ describe('Test Ticketing System API', function () {
     it('GET / user with invalid id', async function () {
       const id = '123'
       const response = await request(app)
-        .get(`/api/v1/user/${id}`)
+        .get(`${CommonConstants.USER_PATH}/${id}`)
         .set('Accept', 'application/json')
         .set('authorization', userToken)
 
@@ -113,18 +113,18 @@ describe('Test Ticketing System API', function () {
     //! User With Invalid Token
     it('GET / user with invalid token', async function () {
       const response = await request(app)
-        .get(`/api/v1/user/${userID}`)
+        .get(`${CommonConstants.USER_PATH}/${userID}`)
         .set('Accept', 'application/json')
         .set('authorization', 'invalid token')
 
       expect(response.status).toEqual(401)
-      expect(response.body.msg).toEqual(`Authentication Invalid`)
+      expect(response.body.msg).toEqual(CommonConstants.AUTHENTICATION_INVALID)
     })
 
     //! Update User Password With Invalid Credentials
     it('PUT / update password with invalid credentials', async function () {
       const response = await request(app)
-        .put(`/api/v1/user/update-password`)
+        .put(`${CommonConstants.USER_PATH}/update-password`)
         .send({
           oldPassword: 'invalid',
           newPassword: 'secret',
@@ -134,14 +134,14 @@ describe('Test Ticketing System API', function () {
 
       expect(response.status).toEqual(401)
       expect(response.body).toEqual({
-        msg: 'Invalid Credentials',
+        msg: CommonConstants.INVALID_CREDENTIALS,
       })
     })
 
     //! Update User Password
     it('PUT /:id', async function () {
       const response = await request(app)
-        .put(`/api/v1/user/update-password`)
+        .put(`${CommonConstants.USER_PATH}/update-password`)
         .send({
           oldPassword: 'password',
           newPassword: 'secret',
@@ -158,7 +158,7 @@ describe('Test Ticketing System API', function () {
     //! Delete User From Database
     it('DELETE /:id', async function () {
       const response = await request(app)
-        .delete(`/api/v1/user/${userID}`)
+        .delete(`${CommonConstants.USER_PATH}/${userID}`)
         .set('Accept', 'application/json')
         .set('authorization', userToken)
 

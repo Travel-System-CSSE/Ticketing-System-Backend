@@ -32,8 +32,8 @@ app.get('/', (req, res) => {
   res.send('<center><h1>Ticketing System Backend</h1></center>')
 })
 
-app.use('/api/v1/auth', authRouter)
-app.use('/api/v1/user', userRouter)
+app.use(CommonConstants.AUTH_PATH, authRouter)
+app.use(CommonConstants.USER_PATH, userRouter)
 app.use(CommonConstants.MANAGER_PATH, managerRouter)
 app.use(CommonConstants.ROUTE_PATH, routeRouter)
 
