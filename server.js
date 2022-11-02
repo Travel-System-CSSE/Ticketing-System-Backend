@@ -21,7 +21,6 @@ const creditRouter = require('./routes/creditRoutes')
 const paystationAuthRouter = require('./routes/paystationAuthRoutes')
 const routeRouter = require('./routes/routeRoutes')
 
-
 // middleware
 const notFoundMiddleware = require('./middleware/not-found')
 const errorHandlerMiddleware = require('./middleware/error-handler')
@@ -39,8 +38,8 @@ app.use(CommonConstants.AUTH_PATH, authRouter)
 app.use(CommonConstants.USER_PATH, userRouter)
 app.use(CommonConstants.MANAGER_PATH, managerRouter)
 app.use(CommonConstants.ROUTE_PATH, routeRouter)
-app.use('/api/v1/credit', creditRouter)
-app.use('/api/v1/paystation/auth', paystationAuthRouter)
+app.use(CommonConstants.CREDIT_PATH, creditRouter)
+app.use(CommonConstants.PAYSTATION_PATH, paystationAuthRouter)
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
