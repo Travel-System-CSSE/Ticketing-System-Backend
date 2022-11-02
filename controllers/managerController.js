@@ -2,55 +2,75 @@ const Manager = require('../models/Manager')
 const { StatusCodes } = require('http-status-codes')
 const CustomError = require('../errors')
 const { createJWT } = require('../utils')
+var commonConstants=require('../CommonConstants')
+const CommonConstants = require('../CommonConstants')
 
-//! MANAGER REGISTER CONTROLLER
-const managerRegister = async (req, res) => {
-  const { name, email, password } = req.body
-
-  if (!name || !email || !password) {
-    throw new CustomError.BadRequestError('Please provide all values')
+var ManagerObs = {};
+/**
+ * Controller for managing user of type manager
+ * observer pattern
+ */ 
+(function (container){
+  //! MANAGER REGISTER FUNCTION
+  container.managerRegister = async (req, res) => {
+    const { name, email, password } = req.body
+  
+    if (!name || !email || !password) {
+      throw new CustomError.BadRequestError(commonConstants.EMPTY_FIELDS)
+    }
+  
+    const isManagerExists = await Manager.findOne({ email })
+    if (isManagerExists) {
+      throw new CustomError.BadRequestError(CommonConstants.USER_ALREADY_EXISTS)
+    }
+  
+    const manager = await Manager.create({ name, email, password })
+  
+    const tokenUser = {
+      userId: manager._id,
+      name: manager.name,
+      email: manager.email,
+    }
+    const token = createJWT({ payload: tokenUser })
+    res.status(StatusCodes.CREATED).json({ user: tokenUser, token })
   }
-
-  const isManagerExists = await Manager.findOne({ email })
-  if (isManagerExists) {
-    throw new CustomError.BadRequestError('User already exists')
+  
+  //! MANAGER LOGIN FUNCTION
+  container.managerLogin = async (req, res) => {
+    const { email, password } = req.body
+    if (!email || !password) {
+      throw new CustomError.BadRequestError(commonConstants.EMPTY_FIELDS)
+    }
+  
+    const manager = await Manager.findOne({ email })
+    if (!manager) {
+      throw new CustomError.UnauthenticatedError(CommonConstants.INVALID_CREDENTIALS)
+    }
+  
+    const isPasswordCorrect = await manager.comparePassword(password)
+    if (!isPasswordCorrect) {
+      throw new CustomError.UnauthenticatedError(CommonConstants.INVALID_CREDENTIALS)
+    }
+  
+    const tokenUser = {
+      userId: manager._id,
+      name: manager.name,
+      email: manager.email,
+    }
+    const token = createJWT({ payload: tokenUser })
+    res.status(StatusCodes.OK).json({ user: tokenUser, token })
   }
-
-  const manager = await Manager.create({ name, email, password })
-
-  const tokenUser = {
-    userId: manager._id,
-    name: manager.name,
-    email: manager.email,
+  //MANAGER DELETE FUNCTION
+  container.deleteManager = async (req, res) => {
+    const user = await Manager.findOne({ _id: req.params.id }).select('-password')
+    if (!user) {
+      throw new CustomError.NotFoundError(CommonConstants.USER_NOT_FOUND+req.params.id)
+    }
+    await user.remove()
+    res.status(StatusCodes.OK).json({ msg: CommonConstants.SUCCESSFULL_USER_DELETE })
   }
-  const token = createJWT({ payload: tokenUser })
-  res.status(StatusCodes.CREATED).json({ user: tokenUser, token })
-}
+})(ManagerObs)
+ 
 
-//! MANAGER LOGIN CONTROLLER
-const managerLogin = async (req, res) => {
-  const { email, password } = req.body
-  if (!email || !password) {
-    throw new CustomError.BadRequestError('Please provide all values')
-  }
+module.exports = { ManagerObs }
 
-  const manager = await Manager.findOne({ email })
-  if (!manager) {
-    throw new CustomError.UnauthenticatedError('Invalid Credentials')
-  }
-
-  const isPasswordCorrect = await manager.comparePassword(password)
-  if (!isPasswordCorrect) {
-    throw new CustomError.UnauthenticatedError('Invalid Credentials')
-  }
-
-  const tokenUser = {
-    userId: manager._id,
-    name: manager.name,
-    email: manager.email,
-  }
-  const token = createJWT({ payload: tokenUser })
-  res.status(StatusCodes.OK).json({ user: tokenUser, token })
-}
-
-module.exports = { managerRegister, managerLogin }
