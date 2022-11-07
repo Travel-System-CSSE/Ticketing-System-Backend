@@ -455,5 +455,16 @@ describe('Test Ticketing System API', function () {
       })
       expect(response.body.token).toEqual(expect.any(String))
     })
+
+    //! Delete credit from database
+    it('DELETE /:id', async function () {
+      const response = await request(app)
+        .delete(CommonConstants.CREDIT_PATH + `/${creditId}`)
+        .set('Accept', 'application/json')
+      expect(response.status).toEqual(200)
+      expect(response.body).toEqual({
+        msg: CommonConstants.CREDIT_DELETE,
+      })
+    })
   })
 })
