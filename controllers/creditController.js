@@ -3,6 +3,7 @@ const CustomError = require("../errors");
 const User = require("../models/User");
 const Credit = require("../models/Credit");
 
+//controller for add credit
 exports.addCredit = async (req, res) => {
   const { idNumber, amount } = req.body;
 
@@ -23,6 +24,8 @@ exports.addCredit = async (req, res) => {
   res.status(StatusCodes.OK).json(credit);
 };
 
+
+//controller for get balance
 exports.getCreditBalance = async (req, res) => {
   const { userId } = req.params;
   if (!userId) {
@@ -40,7 +43,7 @@ exports.getCreditBalance = async (req, res) => {
   }
 };
 
-
+//controller for delete credit
 exports.deleteCredit = async (req, res) => {
   const credit = await Credit.findOne({ _id: req.params.id });
   if (!credit) {
