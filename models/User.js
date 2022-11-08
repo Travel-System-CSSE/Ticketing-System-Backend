@@ -7,8 +7,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       required: [true, 'Please provide name'],
-      minlength: [3, 'mininmum lenght is 3'],
-      maxlength: [30, 'maximum length is 30'],
+      minlength: [3, 'Name mininmum lenght is 3'],
+      maxlength: [30, 'Name maximum length is 30'],
     },
     idNumber: {
       type: String,
